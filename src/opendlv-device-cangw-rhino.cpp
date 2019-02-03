@@ -38,160 +38,31 @@
 #include <string>
 #include <sstream>
 
-inline int encode(uint8_t *dst, uint8_t len);
-int encode(uint8_t *dst, uint8_t len) {
-    if ( (nullptr == dst) || (0 == len) ) return 0;
-    // TODO: Provide logic to check what messages to actually encode; the code in the
-    //       following is mainly template code for illustration.
- 
-    // Message to encode: FH16GW_WHEEL_SPEEDS1_FRAME_ID
-    {
-        fh16gw_wheel_speeds1_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Wheels msg;
-        tmp.front_axle1_wheel_speed_left = fh16gw_wheel_speeds1_front_axle1_wheel_speed_left_encode(msg.speedWheel111());
-        tmp.front_axle1_wheel_speed_right = fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_encode(msg.speedWheel112());
-        tmp.drive_axle1_wheel_speed_left = fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_encode(msg.speedWheel121());
-        tmp.drive_axle1_wheel_speed_right = fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_encode(msg.speedWheel122());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_wheel_speeds1_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_STEER_REQUEST_FRAME_ID
-    {
-        fh16gw_steer_request_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::SteeringRequest msg;
-        tmp.steer_req_delta_trq = fh16gw_steer_request_steer_req_delta_trq_encode(msg.steeringDeltaTorque());
-        tmp.steer_req_rwa = fh16gw_steer_request_steer_req_rwa_encode(msg.steeringRoadWheelAngle());
-        tmp.enable_steer_req = fh16gw_steer_request_enable_steer_req_encode(msg.enableRequest());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_steer_request_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_ACCELERATION_REQUEST_FRAME_ID
-    {
-        fh16gw_acceleration_request_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::AccelerationRequest msg;
-        tmp.acceleration_request_pedal = fh16gw_acceleration_request_acceleration_request_pedal_encode(msg.accelerationPedalPosition());
-        tmp.enable_acc_request = fh16gw_acceleration_request_enable_acc_request_encode(msg.enableRequest());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_acceleration_request_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_WHEEL_SPEEDS2_FRAME_ID
-    {
-        fh16gw_wheel_speeds2_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Wheels msg;
-        tmp.drive_axle2_wheel_speed_left = fh16gw_wheel_speeds2_drive_axle2_wheel_speed_left_encode(msg.speedWheel131());
-        tmp.drive_axle2_wheel_speed_right = fh16gw_wheel_speeds2_drive_axle2_wheel_speed_right_encode(msg.speedWheel132());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_wheel_speeds2_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_AXLE_LOADS_FRAME_ID
-    {
-        fh16gw_axle_loads_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Axles msg;
-        tmp.front_axle1_load = fh16gw_axle_loads_front_axle1_load_encode(msg.loadAxle11());
-        tmp.drive_axle1_load = fh16gw_axle_loads_drive_axle1_load_encode(msg.loadAxle12());
-        tmp.drive_axle2_load = fh16gw_axle_loads_drive_axle2_load_encode(msg.loadAxle13());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_axle_loads_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_STEERING_FRAME_ID
-    {
-        fh16gw_steering_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Steering msg;
-        tmp.road_wheel_angle = fh16gw_steering_road_wheel_angle_encode(msg.roadWheelAngle());
-        tmp.steering_wheel_angle = fh16gw_steering_steering_wheel_angle_encode(msg.steeringWheelAngle());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_steering_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_DRIVELINE_FRAME_ID
-    {
-        fh16gw_driveline_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Driveline msg;
-        tmp.engine_speed = fh16gw_driveline_engine_speed_encode(msg.engineSpeed());
-        tmp.engine_torque = fh16gw_driveline_engine_torque_encode(msg.engineTorque());
-        tmp.current_gear = fh16gw_driveline_current_gear_encode(msg.currentGear());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_driveline_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_MANUAL_DRIVER_FRAME_ID
-    {
-        fh16gw_manual_driver_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::ManualControl msg;
-        tmp.acceleration_pedal_position = fh16gw_manual_driver_acceleration_pedal_position_encode(msg.accelerationPedalPosition());
-        tmp.brake_pedal_position = fh16gw_manual_driver_brake_pedal_position_encode(msg.brakePedalPosition());
-        tmp.torsion_bar_torque = fh16gw_manual_driver_torsion_bar_torque_encode(msg.torsionBarTorque());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_manual_driver_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_VEHICLE_DYNAMICS_FRAME_ID
-    {
-        fh16gw_vehicle_dynamics_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::VehicleState msg;
-        tmp.acceleration_x = fh16gw_vehicle_dynamics_acceleration_x_encode(msg.accelerationX());
-        tmp.acceleration_y = fh16gw_vehicle_dynamics_acceleration_y_encode(msg.accelerationY());
-        tmp.yaw_rate = fh16gw_vehicle_dynamics_yaw_rate_encode(msg.yawRate());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_vehicle_dynamics_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_VEHICLE_SPEED_FRAME_ID
-    {
-        fh16gw_vehicle_speed_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::Propulsion msg;
-        tmp.vehicle_speed_prop_shaft = fh16gw_vehicle_speed_vehicle_speed_prop_shaft_encode(msg.propulsionShaftVehicleSpeed());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_vehicle_speed_pack(dst, &tmp, len);
-        return size;
-    }
-    // Message to encode: FH16GW_BRAKE_REQUEST_FRAME_ID
-    {
-        fh16gw_brake_request_t tmp;
-        // The following msg would have to be passed to this encoder externally.
-        opendlv::proxy::rhino::BrakeRequest msg;
-        tmp.brake_request = fh16gw_brake_request_brake_request_encode(msg.brake());
-        tmp.enable_brake_request = fh16gw_brake_request_enable_brake_request_encode(msg.enableRequest());
-        // The following statement packs the encoded values into a CAN frame.
-        int size = fh16gw_brake_request_pack(dst, &tmp, len);
-        return size;
-    }
-}
-
 int32_t main(int32_t argc, char **argv) {
     int32_t retCode{1};
     auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
     if ( (0 == commandlineArguments.count("cid")) ) {
         std::cerr << argv[0] << " translates messages from CAN to ODVD messages and vice versa." << std::endl;
-        std::cerr << "Usage:   " << argv[0] << " --cid=<OD4 session> --can=<name of the CAN device> [--verbose]" << std::endl;
+        std::cerr << "Usage:   " << argv[0] << " --cid=<OD4 session> [--id=ID] --can=<name of the CAN device> [--enablethrottle] [--enablebrake] [--enablesteering] [--verbose]" << std::endl;
         std::cerr << "         --cid:    CID of the OD4Session to send and receive messages" << std::endl;
-        std::cerr << "Example: " << argv[0] << " --cid=111 --can=can0 --verbose" << std::endl;
+        std::cerr << "         --id:     ID to use as senderStamp for sending" << std::endl;
+        std::cerr << "Example: " << argv[0] << " --cid=111 --can=can0 --enablethrottle --enablebrake --enablesteering --verbose" << std::endl;
     }
     else {
         const std::string CANDEVICE{commandlineArguments["can"]};
+        const uint32_t ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
         const bool VERBOSE{commandlineArguments.count("verbose") != 0};
+
+        const bool ENABLED_ACTUATION_THROTTLE{commandlineArguments.count("enablethrottle") != 0};
+        const bool ENABLED_ACTUATION_BRAKE{commandlineArguments.count("enablebrake") != 0};
+        const bool ENABLED_ACTUATION_STEERING{commandlineArguments.count("enablesteering") != 0};
 
         // Interface to a running OpenDaVINCI session; here, you can send and receive messages.
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
 
         // Delegate to convert incoming CAN frames into ODVD messages that are broadcast into the OD4Session.
         opendlv::proxy::rhino::Wheels msgWheels;
-        auto decode = [&od4, VERBOSE, &msgWheels](cluon::data::TimeStamp ts, uint16_t canFrameID, uint8_t *src, uint8_t len) {
+        auto decode = [&od4, VERBOSE, ID, &msgWheels](cluon::data::TimeStamp ts, uint16_t canFrameID, uint8_t *src, uint8_t len) {
             if ( (nullptr == src) || (0 == len) ) return;
             if (FH16GW_WHEEL_SPEEDS1_FRAME_ID == canFrameID) {
                 fh16gw_wheel_speeds1_t tmp;
@@ -208,7 +79,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msgWheels, ts, 0);
+                    od4.send(msgWheels, ts, ID);
                 }
             }
             else if (FH16GW_WHEEL_SPEEDS2_FRAME_ID == canFrameID) {
@@ -224,7 +95,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msgWheels, ts, 0);
+                    od4.send(msgWheels, ts, ID);
                 }
             }
             else if (FH16GW_AXLE_LOADS_FRAME_ID == canFrameID) {
@@ -242,7 +113,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
             else if (FH16GW_STEERING_FRAME_ID == canFrameID) {
@@ -259,7 +130,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
             else if (FH16GW_DRIVELINE_FRAME_ID == canFrameID) {
@@ -277,7 +148,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
             else if (FH16GW_MANUAL_DRIVER_FRAME_ID == canFrameID) {
@@ -295,7 +166,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
             else if (FH16GW_VEHICLE_DYNAMICS_FRAME_ID == canFrameID) {
@@ -313,7 +184,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
             else if (FH16GW_VEHICLE_SPEED_FRAME_ID == canFrameID) {
@@ -329,15 +200,10 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msg, ts, ID);
                 }
             }
         };
-
-
-//        // Finally, we register our lambda for the message identifier for opendlv::proxy::DistanceReading.
-//        od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistance);
-
 
 #ifdef __linux__
         struct sockaddr_can address;
@@ -381,6 +247,114 @@ int32_t main(int32_t argc, char **argv) {
         std::cerr << "failed (SocketCAN not available on this platform). " << std::endl;
         return retCode;
 #endif
+
+        // Delegate for handling incoming opendlv.proxy.ActuationRequest.
+        auto onActuationRequest = [&socketCAN, ENABLED_ACTUATION_BRAKE, ENABLED_ACTUATION_THROTTLE, ENABLED_ACTUATION_STEERING](cluon::data::Envelope &&env){
+            opendlv::proxy::ActuationRequest ar = cluon::extractMessage<opendlv::proxy::ActuationRequest>(std::move(env));
+
+            const bool isValid{ar.isValid()};
+
+            const float acceleration{ar.acceleration()};
+            if (acceleration < 0.0f) {
+                opendlv::proxy::rhino::BrakeRequest brakeRequest;
+                brakeRequest.enableRequest(ENABLED_ACTUATION_BRAKE && isValid);
+
+                const float max_deceleration{2.0f};
+                if (acceleration < -max_deceleration) {
+                    if (ENABLED_ACTUATION_BRAKE && isValid) {
+                      std::clog << "[opendlv-device-cangw-rhino] WARNING: Deceleration was limited to " 
+                        << max_deceleration << ". This should never happen, and "
+                        << "may be a safety violating behaviour!" 
+                        << std::endl;
+                    }
+                    brakeRequest.brake(-max_deceleration);
+                }
+                else {
+                    brakeRequest.brake(acceleration);
+                }
+
+                {
+                    fh16gw_brake_request_t tmp;
+                    tmp.brake_request = fh16gw_brake_request_brake_request_encode(brakeRequest.brake());
+                    tmp.enable_brake_request = fh16gw_brake_request_enable_brake_request_encode(brakeRequest.enableRequest());
+
+                    // The following statement packs the encoded values into a CAN frame.
+                    uint8_t buffer[8];
+                    int len = fh16gw_brake_request_pack(buffer, &tmp, 8);
+                    if ( (0 < len) && (-1 < socketCAN) ) {
+#ifdef __linux__
+                        struct can_frame frame;
+                        frame.can_id = FH16GW_BRAKE_REQUEST_FRAME_ID;
+                        frame.can_dlc = len;
+                        memcpy(frame.data, buffer, 8);
+                        int32_t nbytes = ::write(socketCAN, &frame, sizeof(struct can_frame));
+                        if (!(0 < nbytes)) {
+                            std::clog << "[SocketCANDevice] Writing ID = " << frame.can_id << ", LEN = " << +frame.can_dlc << ", strerror(" << errno << "): '" << strerror(errno) << "'" << std::endl;
+                        }
+#endif
+                    }
+                }
+            }
+            else {
+                opendlv::proxy::rhino::AccelerationRequest accelerationRequest;
+                accelerationRequest.enableRequest(ENABLED_ACTUATION_THROTTLE && isValid);
+                accelerationRequest.accelerationPedalPosition(acceleration);
+
+                {
+                    fh16gw_acceleration_request_t tmp;
+                    tmp.acceleration_request_pedal = fh16gw_acceleration_request_acceleration_request_pedal_encode(accelerationRequest.accelerationPedalPosition());
+                    tmp.enable_acc_request = fh16gw_acceleration_request_enable_acc_request_encode(accelerationRequest.enableRequest());
+
+                    // The following statement packs the encoded values into a CAN frame.
+                    uint8_t buffer[8];
+                    int len = fh16gw_acceleration_request_pack(buffer, &tmp, 8);
+                    if ( (0 < len) && (-1 < socketCAN) ) {
+#ifdef __linux__
+                        struct can_frame frame;
+                        frame.can_id = FH16GW_ACCELERATION_REQUEST_FRAME_ID;
+                        frame.can_dlc = len;
+                        memcpy(frame.data, buffer, 8);
+                        int32_t nbytes = ::write(socketCAN, &frame, sizeof(struct can_frame));
+                        if (!(0 < nbytes)) {
+                            std::clog << "[SocketCANDevice] Writing ID = " << frame.can_id << ", LEN = " << +frame.can_dlc << ", strerror(" << errno << "): '" << strerror(errno) << "'" << std::endl;
+                        }
+#endif
+                    }
+                }
+            }
+
+            opendlv::proxy::rhino::SteeringRequest steeringRequest;
+            steeringRequest.enableRequest(ENABLED_ACTUATION_STEERING && isValid);
+            steeringRequest.steeringRoadWheelAngle(ar.steering());
+            // Must be 33.535 to disable deltatorque.
+            steeringRequest.steeringDeltaTorque(33.535);
+
+            {
+                fh16gw_steer_request_t tmp;
+                tmp.steer_req_delta_trq = fh16gw_steer_request_steer_req_delta_trq_encode(steeringRequest.steeringDeltaTorque());
+                tmp.steer_req_rwa = fh16gw_steer_request_steer_req_rwa_encode(steeringRequest.steeringRoadWheelAngle());
+                tmp.enable_steer_req = fh16gw_steer_request_enable_steer_req_encode(steeringRequest.enableRequest());
+
+                // The following statement packs the encoded values into a CAN frame.
+                uint8_t buffer[8];
+                int len = fh16gw_steer_request_pack(buffer, &tmp, 8);
+                if ( (0 < len) && (-1 < socketCAN) ) {
+#ifdef __linux__
+                    struct can_frame frame;
+                    frame.can_id = FH16GW_STEER_REQUEST_FRAME_ID;
+                    frame.can_dlc = len;
+                    memcpy(frame.data, buffer, 8);
+                    int32_t nbytes = ::write(socketCAN, &frame, sizeof(struct can_frame));
+                    if (!(0 < nbytes)) {
+                        std::clog << "[SocketCANDevice] Writing ID = " << frame.can_id << ", LEN = " << +frame.can_dlc << ", strerror(" << errno << "): '" << strerror(errno) << "'" << std::endl;
+                    }
+#endif
+                }
+            }
+        };
+
+        // Register our lambda for the message identifier for opendlv::proxy::rhino::AccelerationRequest.
+        od4.dataTrigger(opendlv::proxy::ActuationRequest::ID(), onActuationRequest);
 
         struct can_frame frame;
         fd_set rfds;
