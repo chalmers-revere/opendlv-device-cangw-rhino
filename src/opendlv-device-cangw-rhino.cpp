@@ -189,43 +189,42 @@ int32_t main(int32_t argc, char **argv) {
         // Interface to a running OpenDaVINCI session; here, you can send and receive messages.
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
 
-        // Delegate to handle incoming CAN frames.
-        auto decode = [&od4, VERBOSE](cluon::data::TimeStamp ts, uint16_t canFrameID, uint8_t *src, uint8_t len) {
+        // Delegate to convert incoming CAN frames into ODVD messages that are broadcast into the OD4Session.
+        opendlv::proxy::rhino::Wheels msgWheels;
+        auto decode = [&od4, VERBOSE, &msgWheels](cluon::data::TimeStamp ts, uint16_t canFrameID, uint8_t *src, uint8_t len) {
             if ( (nullptr == src) || (0 == len) ) return;
             if (FH16GW_WHEEL_SPEEDS1_FRAME_ID == canFrameID) {
                 fh16gw_wheel_speeds1_t tmp;
                 if (0 == fh16gw_wheel_speeds1_unpack(&tmp, src, len)) {
-                    opendlv::proxy::rhino::Wheels msg;
-                    msg.speedWheel111(fh16gw_wheel_speeds1_front_axle1_wheel_speed_left_decode(tmp.front_axle1_wheel_speed_left));
-                    msg.speedWheel112(fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_decode(tmp.front_axle1_wheel_speed_right));
-                    msg.speedWheel121(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_decode(tmp.drive_axle1_wheel_speed_left));
-                    msg.speedWheel122(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_decode(tmp.drive_axle1_wheel_speed_right));
+                    msgWheels.speedWheel111(fh16gw_wheel_speeds1_front_axle1_wheel_speed_left_decode(tmp.front_axle1_wheel_speed_left));
+                    msgWheels.speedWheel112(fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_decode(tmp.front_axle1_wheel_speed_right));
+                    msgWheels.speedWheel121(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_decode(tmp.drive_axle1_wheel_speed_left));
+                    msgWheels.speedWheel122(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_decode(tmp.drive_axle1_wheel_speed_right));
                     if (VERBOSE) {
                         std::stringstream sstr;
-                        msg.accept([](uint32_t, const std::string &, const std::string &) {},
+                        msgWheels.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msgWheels, ts, 0);
                 }
             }
             else if (FH16GW_WHEEL_SPEEDS2_FRAME_ID == canFrameID) {
                 fh16gw_wheel_speeds2_t tmp;
                 if (0 == fh16gw_wheel_speeds2_unpack(&tmp, src, len)) {
-                    opendlv::proxy::rhino::Wheels msg;
-                    msg.speedWheel131(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_left_decode(tmp.drive_axle2_wheel_speed_left));
-                    msg.speedWheel132(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_right_decode(tmp.drive_axle2_wheel_speed_right));
+                    msgWheels.speedWheel131(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_left_decode(tmp.drive_axle2_wheel_speed_left));
+                    msgWheels.speedWheel132(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_right_decode(tmp.drive_axle2_wheel_speed_right));
                     if (VERBOSE) {
                         std::stringstream sstr;
-                        msg.accept([](uint32_t, const std::string &, const std::string &) {},
+                        msgWheels.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
 
-                    od4.send(msg, ts, 0);
+                    od4.send(msgWheels, ts, 0);
                 }
             }
             else if (FH16GW_AXLE_LOADS_FRAME_ID == canFrameID) {
@@ -267,9 +266,9 @@ int32_t main(int32_t argc, char **argv) {
                 fh16gw_driveline_t tmp;
                 if (0 == fh16gw_driveline_unpack(&tmp, src, len)) {
                     opendlv::proxy::rhino::Driveline msg;
-                    msg.engineSpeed(fh16gw_driveline_engine_speed_decode(tmp.engine_speed));
-                    msg.engineTorque(fh16gw_driveline_engine_torque_decode(tmp.engine_torque));
-                    msg.currentGear(fh16gw_driveline_current_gear_decode(tmp.current_gear));
+                    msg.engineSpeed(static_cast<float>(fh16gw_driveline_engine_speed_decode(tmp.engine_speed)));
+                    msg.engineTorque(static_cast<float>(fh16gw_driveline_engine_torque_decode(tmp.engine_torque)));
+                    msg.currentGear(static_cast<int8_t>(fh16gw_driveline_current_gear_decode(tmp.current_gear)));
                     if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
