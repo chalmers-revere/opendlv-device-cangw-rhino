@@ -18,7 +18,8 @@ cmake_minimum_required(VERSION 3.2)
 project(opendlv-device-cangw-rhino)
 
 ################################################################################
-# Defining the relevant version of libcluon.
+# Defining the relevant versions of OpenDLV Standard Message Set and libcluon.
+set(OPENDLV_STANDARD_MESSAGE_SET opendlv-standard-message-set-v0.9.7.odvd)
 set(CLUON_COMPLETE cluon-complete-v0.0.120.hpp)
 
 ################################################################################
@@ -60,6 +61,25 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cluon-complete.hpp
 include_directories(SYSTEM ${CMAKE_BINARY_DIR})
 
 ################################################################################
+# Extract cluon-msc from cluon-complete.hpp.
+add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cluon-msc
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/src/${CLUON_COMPLETE} ${CMAKE_BINARY_DIR}/cluon-complete.hpp
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/cluon-complete.hpp ${CMAKE_BINARY_DIR}/cluon-complete.cpp
+    COMMAND ${CMAKE_CXX_COMPILER} -o ${CMAKE_BINARY_DIR}/cluon-msc ${CMAKE_BINARY_DIR}/cluon-complete.cpp -std=c++14 -pthread -D HAVE_CLUON_MSC
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/${CLUON_COMPLETE})
+
+################################################################################
+# Generate opendlv-standard-message-set.hpp from ${OPENDLV_STANDARD_MESSAGE_SET} file.
+add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.hpp
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_BINARY_DIR}/cluon-msc --cpp --out=${CMAKE_BINARY_DIR}/opendlv-standard-message-set.hpp ${CMAKE_CURRENT_SOURCE_DIR}/src/${OPENDLV_STANDARD_MESSAGE_SET}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/${OPENDLV_STANDARD_MESSAGE_SET} ${CMAKE_BINARY_DIR}/cluon-msc)
+# Add current build directory as include directory as it contains generated files.
+include_directories(SYSTEM ${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+################################################################################
 # Threads are necessary for linking the resulting binaries as UDPReceiver is running in parallel.
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -76,7 +96,7 @@ endif()
 ################################################################################
 # Create executable.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp ${CMAKE_BINARY_DIR}/cluon-complete.hpp)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp ${CMAKE_BINARY_DIR}/cluon-complete.hpp ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.hpp)
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 ################################################################################

@@ -16,6 +16,7 @@
  */
 
 #include "cluon-complete.hpp"
+#include "opendlv-standard-message-set.hpp"
 #include "fh16gw.hpp"
 
 #include <sys/ioctl.h>
@@ -192,6 +193,15 @@ int32_t main(int32_t argc, char **argv) {
                 if (0 == fh16gw_vehicle_speed_unpack(&tmp, src, len)) {
                     opendlv::proxy::rhino::Propulsion msg;
                     msg.propulsionShaftVehicleSpeed(fh16gw_vehicle_speed_vehicle_speed_prop_shaft_decode(tmp.vehicle_speed_prop_shaft));
+
+                    // Send opendlv::proxy::GroundSpeedReading.
+                    {
+                        opendlv::proxy::GroundSpeedReading groundSpeedReading;
+                        groundSpeedReading.groundSpeed(static_cast<float>(msg.propulsionShaftVehicleSpeed() / 3.6f));
+
+                        od4.send(groundSpeedReading, ts, ID);
+                    }
+
                     if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
@@ -200,6 +210,7 @@ int32_t main(int32_t argc, char **argv) {
                         std::cout << sstr.str() << std::endl;
                     }
 
+                    // Send original CAN frame's content.
                     od4.send(msg, ts, ID);
                 }
             }
