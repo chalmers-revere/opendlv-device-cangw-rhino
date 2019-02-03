@@ -44,12 +44,25 @@ int encode(uint8_t *dst, uint8_t len) {
     // TODO: Provide logic to check what messages to actually encode; the code in the
     //       following is mainly template code for illustration.
  
-
+    // Message to encode: FH16GW_WHEEL_SPEEDS1_FRAME_ID
+    {
+        fh16gw_wheel_speeds1_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Wheels msg;
+        tmp.front_axle1_wheel_speed_left = fh16gw_wheel_speeds1_front_axle1_wheel_speed_left_encode(msg.speedWheel111());
+        tmp.front_axle1_wheel_speed_right = fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_encode(msg.speedWheel112());
+        tmp.drive_axle1_wheel_speed_left = fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_encode(msg.speedWheel121());
+        tmp.drive_axle1_wheel_speed_right = fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_encode(msg.speedWheel122());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_wheel_speeds1_pack(dst, &tmp, len);
+        return size;
+    }
     // Message to encode: FH16GW_STEER_REQUEST_FRAME_ID
     {
         fh16gw_steer_request_t tmp;
         // The following msg would have to be passed to this encoder externally.
         opendlv::proxy::rhino::SteeringRequest msg;
+        tmp.steer_req_delta_trq = fh16gw_steer_request_steer_req_delta_trq_encode(msg.steeringDeltaTorque());
         tmp.steer_req_rwa = fh16gw_steer_request_steer_req_rwa_encode(msg.steeringRoadWheelAngle());
         tmp.enable_steer_req = fh16gw_steer_request_enable_steer_req_encode(msg.enableRequest());
         // The following statement packs the encoded values into a CAN frame.
@@ -67,6 +80,86 @@ int encode(uint8_t *dst, uint8_t len) {
         int size = fh16gw_acceleration_request_pack(dst, &tmp, len);
         return size;
     }
+    // Message to encode: FH16GW_WHEEL_SPEEDS2_FRAME_ID
+    {
+        fh16gw_wheel_speeds2_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Wheels msg;
+        tmp.drive_axle2_wheel_speed_left = fh16gw_wheel_speeds2_drive_axle2_wheel_speed_left_encode(msg.speedWheel131());
+        tmp.drive_axle2_wheel_speed_right = fh16gw_wheel_speeds2_drive_axle2_wheel_speed_right_encode(msg.speedWheel132());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_wheel_speeds2_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_AXLE_LOADS_FRAME_ID
+    {
+        fh16gw_axle_loads_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Axles msg;
+        tmp.front_axle1_load = fh16gw_axle_loads_front_axle1_load_encode(msg.loadAxle11());
+        tmp.drive_axle1_load = fh16gw_axle_loads_drive_axle1_load_encode(msg.loadAxle12());
+        tmp.drive_axle2_load = fh16gw_axle_loads_drive_axle2_load_encode(msg.loadAxle13());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_axle_loads_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_STEERING_FRAME_ID
+    {
+        fh16gw_steering_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Steering msg;
+        tmp.road_wheel_angle = fh16gw_steering_road_wheel_angle_encode(msg.roadWheelAngle());
+        tmp.steering_wheel_angle = fh16gw_steering_steering_wheel_angle_encode(msg.steeringWheelAngle());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_steering_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_DRIVELINE_FRAME_ID
+    {
+        fh16gw_driveline_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Driveline msg;
+        tmp.engine_speed = fh16gw_driveline_engine_speed_encode(msg.engineSpeed());
+        tmp.engine_torque = fh16gw_driveline_engine_torque_encode(msg.engineTorque());
+        tmp.current_gear = fh16gw_driveline_current_gear_encode(msg.currentGear());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_driveline_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_MANUAL_DRIVER_FRAME_ID
+    {
+        fh16gw_manual_driver_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::ManualControl msg;
+        tmp.acceleration_pedal_position = fh16gw_manual_driver_acceleration_pedal_position_encode(msg.accelerationPedalPosition());
+        tmp.brake_pedal_position = fh16gw_manual_driver_brake_pedal_position_encode(msg.brakePedalPosition());
+        tmp.torsion_bar_torque = fh16gw_manual_driver_torsion_bar_torque_encode(msg.torsionBarTorque());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_manual_driver_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_VEHICLE_DYNAMICS_FRAME_ID
+    {
+        fh16gw_vehicle_dynamics_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::VehicleState msg;
+        tmp.acceleration_x = fh16gw_vehicle_dynamics_acceleration_x_encode(msg.accelerationX());
+        tmp.acceleration_y = fh16gw_vehicle_dynamics_acceleration_y_encode(msg.accelerationY());
+        tmp.yaw_rate = fh16gw_vehicle_dynamics_yaw_rate_encode(msg.yawRate());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_vehicle_dynamics_pack(dst, &tmp, len);
+        return size;
+    }
+    // Message to encode: FH16GW_VEHICLE_SPEED_FRAME_ID
+    {
+        fh16gw_vehicle_speed_t tmp;
+        // The following msg would have to be passed to this encoder externally.
+        opendlv::proxy::rhino::Propulsion msg;
+        tmp.vehicle_speed_prop_shaft = fh16gw_vehicle_speed_vehicle_speed_prop_shaft_encode(msg.propulsionShaftVehicleSpeed());
+        // The following statement packs the encoded values into a CAN frame.
+        int size = fh16gw_vehicle_speed_pack(dst, &tmp, len);
+        return size;
+    }
     // Message to encode: FH16GW_BRAKE_REQUEST_FRAME_ID
     {
         fh16gw_brake_request_t tmp;
@@ -79,7 +172,6 @@ int encode(uint8_t *dst, uint8_t len) {
         return size;
     }
 }
-
 inline void decode(uint16_t canFrameID, uint8_t *src, uint8_t len);
 void decode(uint16_t canFrameID, uint8_t *src, uint8_t len) {
     if ( (nullptr == src) || (0 == len) ) return;
@@ -91,6 +183,39 @@ void decode(uint16_t canFrameID, uint8_t *src, uint8_t len) {
             msg.speedWheel112(fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_decode(tmp.front_axle1_wheel_speed_right));
             msg.speedWheel121(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_decode(tmp.drive_axle1_wheel_speed_left));
             msg.speedWheel122(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_decode(tmp.drive_axle1_wheel_speed_right));
+            // The following block is automatically added to demonstrate how to display the received values.
+            {
+                std::stringstream sstr;
+                msg.accept([](uint32_t, const std::string &, const std::string &) {},
+                           [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
+                           []() {});
+                std::cout << sstr.str() << std::endl;
+            }
+        }
+    }
+    else if (FH16GW_STEER_REQUEST_FRAME_ID == canFrameID) {
+        fh16gw_steer_request_t tmp;
+        if (0 == fh16gw_steer_request_unpack(&tmp, src, len)) {
+            opendlv::proxy::rhino::SteeringRequest msg;
+            msg.steeringDeltaTorque(fh16gw_steer_request_steer_req_delta_trq_decode(tmp.steer_req_delta_trq));
+            msg.steeringRoadWheelAngle(fh16gw_steer_request_steer_req_rwa_decode(tmp.steer_req_rwa));
+            msg.enableRequest(fh16gw_steer_request_enable_steer_req_decode(tmp.enable_steer_req));
+            // The following block is automatically added to demonstrate how to display the received values.
+            {
+                std::stringstream sstr;
+                msg.accept([](uint32_t, const std::string &, const std::string &) {},
+                           [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
+                           []() {});
+                std::cout << sstr.str() << std::endl;
+            }
+        }
+    }
+    else if (FH16GW_ACCELERATION_REQUEST_FRAME_ID == canFrameID) {
+        fh16gw_acceleration_request_t tmp;
+        if (0 == fh16gw_acceleration_request_unpack(&tmp, src, len)) {
+            opendlv::proxy::rhino::AccelerationRequest msg;
+            msg.accelerationPedalPosition(fh16gw_acceleration_request_acceleration_request_pedal_decode(tmp.acceleration_request_pedal));
+            msg.enableRequest(fh16gw_acceleration_request_enable_acc_request_decode(tmp.enable_acc_request));
             // The following block is automatically added to demonstrate how to display the received values.
             {
                 std::stringstream sstr;
@@ -206,6 +331,22 @@ void decode(uint16_t canFrameID, uint8_t *src, uint8_t len) {
         if (0 == fh16gw_vehicle_speed_unpack(&tmp, src, len)) {
             opendlv::proxy::rhino::Propulsion msg;
             msg.propulsionShaftVehicleSpeed(fh16gw_vehicle_speed_vehicle_speed_prop_shaft_decode(tmp.vehicle_speed_prop_shaft));
+            // The following block is automatically added to demonstrate how to display the received values.
+            {
+                std::stringstream sstr;
+                msg.accept([](uint32_t, const std::string &, const std::string &) {},
+                           [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
+                           []() {});
+                std::cout << sstr.str() << std::endl;
+            }
+        }
+    }
+    else if (FH16GW_BRAKE_REQUEST_FRAME_ID == canFrameID) {
+        fh16gw_brake_request_t tmp;
+        if (0 == fh16gw_brake_request_unpack(&tmp, src, len)) {
+            opendlv::proxy::rhino::BrakeRequest msg;
+            msg.brake(fh16gw_brake_request_brake_request_decode(tmp.brake_request));
+            msg.enableRequest(fh16gw_brake_request_enable_brake_request_decode(tmp.enable_brake_request));
             // The following block is automatically added to demonstrate how to display the received values.
             {
                 std::stringstream sstr;

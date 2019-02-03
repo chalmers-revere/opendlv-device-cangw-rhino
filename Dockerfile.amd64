@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Part to build opendlv-device-cangw-rhino.
-FROM chalmersrevere/dbc2odvd-amd64:v0.0.2 as builder
+FROM chalmersrevere/dbc2odvd-amd64:v0.0.3 as builder
 MAINTAINER Christian Berger "christian.berger@gu.se"
 
 RUN apt-get update -y && \
