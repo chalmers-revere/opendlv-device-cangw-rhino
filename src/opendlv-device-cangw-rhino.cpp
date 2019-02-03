@@ -190,7 +190,7 @@ int32_t main(int32_t argc, char **argv) {
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
 
         // Delegate to handle incoming CAN frames.
-        auto decode = [&od4](uint16_t canFrameID, uint8_t *src, uint8_t len) {
+        auto decode = [&od4, VERBOSE](cluon::data::TimeStamp ts, uint16_t canFrameID, uint8_t *src, uint8_t len) {
             if ( (nullptr == src) || (0 == len) ) return;
             if (FH16GW_WHEEL_SPEEDS1_FRAME_ID == canFrameID) {
                 fh16gw_wheel_speeds1_t tmp;
@@ -200,47 +200,15 @@ int32_t main(int32_t argc, char **argv) {
                     msg.speedWheel112(fh16gw_wheel_speeds1_front_axle1_wheel_speed_right_decode(tmp.front_axle1_wheel_speed_right));
                     msg.speedWheel121(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_left_decode(tmp.drive_axle1_wheel_speed_left));
                     msg.speedWheel122(fh16gw_wheel_speeds1_drive_axle1_wheel_speed_right_decode(tmp.drive_axle1_wheel_speed_right));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
-                }
-            }
-            else if (FH16GW_STEER_REQUEST_FRAME_ID == canFrameID) {
-                fh16gw_steer_request_t tmp;
-                if (0 == fh16gw_steer_request_unpack(&tmp, src, len)) {
-                    opendlv::proxy::rhino::SteeringRequest msg;
-                    msg.steeringDeltaTorque(fh16gw_steer_request_steer_req_delta_trq_decode(tmp.steer_req_delta_trq));
-                    msg.steeringRoadWheelAngle(fh16gw_steer_request_steer_req_rwa_decode(tmp.steer_req_rwa));
-                    msg.enableRequest(fh16gw_steer_request_enable_steer_req_decode(tmp.enable_steer_req));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
-                        std::stringstream sstr;
-                        msg.accept([](uint32_t, const std::string &, const std::string &) {},
-                                   [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
-                                   []() {});
-                        std::cout << sstr.str() << std::endl;
-                    }
-                }
-            }
-            else if (FH16GW_ACCELERATION_REQUEST_FRAME_ID == canFrameID) {
-                fh16gw_acceleration_request_t tmp;
-                if (0 == fh16gw_acceleration_request_unpack(&tmp, src, len)) {
-                    opendlv::proxy::rhino::AccelerationRequest msg;
-                    msg.accelerationPedalPosition(fh16gw_acceleration_request_acceleration_request_pedal_decode(tmp.acceleration_request_pedal));
-                    msg.enableRequest(fh16gw_acceleration_request_enable_acc_request_decode(tmp.enable_acc_request));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
-                        std::stringstream sstr;
-                        msg.accept([](uint32_t, const std::string &, const std::string &) {},
-                                   [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
-                                   []() {});
-                        std::cout << sstr.str() << std::endl;
-                    }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_WHEEL_SPEEDS2_FRAME_ID == canFrameID) {
@@ -249,14 +217,15 @@ int32_t main(int32_t argc, char **argv) {
                     opendlv::proxy::rhino::Wheels msg;
                     msg.speedWheel131(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_left_decode(tmp.drive_axle2_wheel_speed_left));
                     msg.speedWheel132(fh16gw_wheel_speeds2_drive_axle2_wheel_speed_right_decode(tmp.drive_axle2_wheel_speed_right));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_AXLE_LOADS_FRAME_ID == canFrameID) {
@@ -266,14 +235,15 @@ int32_t main(int32_t argc, char **argv) {
                     msg.loadAxle11(fh16gw_axle_loads_front_axle1_load_decode(tmp.front_axle1_load));
                     msg.loadAxle12(fh16gw_axle_loads_drive_axle1_load_decode(tmp.drive_axle1_load));
                     msg.loadAxle13(fh16gw_axle_loads_drive_axle2_load_decode(tmp.drive_axle2_load));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_STEERING_FRAME_ID == canFrameID) {
@@ -282,14 +252,15 @@ int32_t main(int32_t argc, char **argv) {
                     opendlv::proxy::rhino::Steering msg;
                     msg.roadWheelAngle(fh16gw_steering_road_wheel_angle_decode(tmp.road_wheel_angle));
                     msg.steeringWheelAngle(fh16gw_steering_steering_wheel_angle_decode(tmp.steering_wheel_angle));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_DRIVELINE_FRAME_ID == canFrameID) {
@@ -299,14 +270,15 @@ int32_t main(int32_t argc, char **argv) {
                     msg.engineSpeed(fh16gw_driveline_engine_speed_decode(tmp.engine_speed));
                     msg.engineTorque(fh16gw_driveline_engine_torque_decode(tmp.engine_torque));
                     msg.currentGear(fh16gw_driveline_current_gear_decode(tmp.current_gear));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_MANUAL_DRIVER_FRAME_ID == canFrameID) {
@@ -316,14 +288,15 @@ int32_t main(int32_t argc, char **argv) {
                     msg.accelerationPedalPosition(fh16gw_manual_driver_acceleration_pedal_position_decode(tmp.acceleration_pedal_position));
                     msg.brakePedalPosition(fh16gw_manual_driver_brake_pedal_position_decode(tmp.brake_pedal_position));
                     msg.torsionBarTorque(fh16gw_manual_driver_torsion_bar_torque_decode(tmp.torsion_bar_torque));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_VEHICLE_DYNAMICS_FRAME_ID == canFrameID) {
@@ -333,14 +306,15 @@ int32_t main(int32_t argc, char **argv) {
                     msg.accelerationX(fh16gw_vehicle_dynamics_acceleration_x_decode(tmp.acceleration_x));
                     msg.accelerationY(fh16gw_vehicle_dynamics_acceleration_y_decode(tmp.acceleration_y));
                     msg.yawRate(fh16gw_vehicle_dynamics_yaw_rate_decode(tmp.yaw_rate));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
+
+                    od4.send(msg, ts, 0);
                 }
             }
             else if (FH16GW_VEHICLE_SPEED_FRAME_ID == canFrameID) {
@@ -348,30 +322,15 @@ int32_t main(int32_t argc, char **argv) {
                 if (0 == fh16gw_vehicle_speed_unpack(&tmp, src, len)) {
                     opendlv::proxy::rhino::Propulsion msg;
                     msg.propulsionShaftVehicleSpeed(fh16gw_vehicle_speed_vehicle_speed_prop_shaft_decode(tmp.vehicle_speed_prop_shaft));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
+                    if (VERBOSE) {
                         std::stringstream sstr;
                         msg.accept([](uint32_t, const std::string &, const std::string &) {},
                                    [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
                                    []() {});
                         std::cout << sstr.str() << std::endl;
                     }
-                }
-            }
-            else if (FH16GW_BRAKE_REQUEST_FRAME_ID == canFrameID) {
-                fh16gw_brake_request_t tmp;
-                if (0 == fh16gw_brake_request_unpack(&tmp, src, len)) {
-                    opendlv::proxy::rhino::BrakeRequest msg;
-                    msg.brake(fh16gw_brake_request_brake_request_decode(tmp.brake_request));
-                    msg.enableRequest(fh16gw_brake_request_enable_brake_request_decode(tmp.enable_brake_request));
-                    // The following block is automatically added to demonstrate how to display the received values.
-                    {
-                        std::stringstream sstr;
-                        msg.accept([](uint32_t, const std::string &, const std::string &) {},
-                                   [&sstr](uint32_t, std::string &&, std::string &&n, auto v) { sstr << n << " = " << v << '\n'; },
-                                   []() {});
-                        std::cout << sstr.str() << std::endl;
-                    }
+
+                    od4.send(msg, ts, 0);
                 }
             }
         };
@@ -453,11 +412,7 @@ int32_t main(int32_t argc, char **argv) {
                     cluon::data::TimeStamp sampleTimeStamp;
                     sampleTimeStamp.seconds(socketTimeStamp.tv_sec)
                                    .microseconds(socketTimeStamp.tv_usec);
-
-//                    std::cout << "Received CAN frame 0x" << std::hex << frame.can_id << std::dec << " of length " << +frame.can_dlc << " bytes." << std::endl;
-
-                    decode(frame.can_id, frame.data, frame.can_dlc);
-                    // TODO: Broadcast into OD4 session.
+                    decode(sampleTimeStamp, frame.can_id, frame.data, frame.can_dlc);
                 }
             }
 #endif
