@@ -27,7 +27,7 @@ This microservice is created automatically on changes to this repository via Doc
 To run this microservice using our pre-built Docker image, simply start it as follows:
 
 ```
-docker run --rm -ti --net=host --privileged chalmersrevere/opendlv-device-cangw-rhino-amd64:v0.0.4 --cid=111 --id=1 --can=vcan0 --enablethrottle --enablebrake --enablesteering
+docker run --rm -ti --net=host --privileged chalmersrevere/opendlv-device-cangw-rhino-amd64:v0.0.5 --cid=111 --id=1 --can=vcan0 --enablethrottle --enablebrake --enablesteering
 ```
 
 
